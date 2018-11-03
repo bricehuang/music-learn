@@ -50,3 +50,6 @@ def melSpectrogram(spectrogram):
             mspect[row][m] = sum(spectrogram[row][(pcol+1):(col+1)])/float(col-pcol)
             pcol = col
     return mspect
+
+def logCompress(spectrogram):
+    return np.array([np.log(amp) for amp in spectrogram])
