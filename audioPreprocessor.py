@@ -35,8 +35,11 @@ def normalize(snippet):
 def melSpectrogram(spectrogram):
     mspect = np.zeros((len(spectrogram), 128))
     for row in range(len(spectrogram)):
+        pcol = -1
         for m in range(128):
             f = 700*(10**(m/104) - 1)
             col = f*1.0/STFT_WINDOW_LEN
-            mspect[row][m] = spectrogram[row][col]
+            assert(col < len(spectrogram[row]))
+            mspect[row][m] = sum(spectrogram[row][(pcol+1):(col+1)])/float(col-pcol)
+            pcol = col
     return mspect
