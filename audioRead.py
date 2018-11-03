@@ -1,5 +1,6 @@
 import scipy.io.wavfile as wf
 import os
+import numpy as np
 
 def read(filename):
     _, data = wf.read(filename)
@@ -13,6 +14,8 @@ def readTrainingAudio():
     for label in os.listdir(path):
         for fname in os.listdir(path+"/"+label):
             data = read(path+"/"+label+"/"+fname)
+            if len(data) < 3*44100:
+                data = np.concatenate((data, np.zeros((3*44100 - len(data), 2), dtype="int16")))
             dataList.append((data,label))
     return dataList
 

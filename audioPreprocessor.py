@@ -17,7 +17,7 @@ def toMono(snippet):
     elif channels == 2:
         def _average_vals(vals):
             return float(sum(vals)) / len(vals)
-        return np.array([_average_channels(vals) for vals in snippet])
+        return np.array([_average_vals(vals) for vals in snippet])
     else:
         assert False
 
@@ -45,8 +45,11 @@ def melSpectrogram(spectrogram):
         pcol = -1
         for m in range(128):
             f = 700*(10**(m/104) - 1)
-            col = f*1.0/STFT_WINDOW_LEN
-            assert(col < len(spectrogram[row]))
+            col = int(np.round(f*1.0/STFT_WINDOW_LEN))
+            if(col >= len(spectrogram[row])):
+                print(m, col)
+                print(len(spectrogram[row]))
+                exit()
             mspect[row][m] = sum(spectrogram[row][(pcol+1):(col+1)])/float(col-pcol)
             pcol = col
     return mspect
