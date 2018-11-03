@@ -5,9 +5,9 @@ STFT_WINDOW_LEN = 1024/22050.0
 
 def divide(clip, window, hop):
     L = []
-    for i in range(0,len(clip),hop):
+    for i in range(0,len(clip)-window+1,hop):
         L.append(clip[i:i+window])
-    return L
+    return np.array(L)
 
 def toMono(snippet):
     channels = len(snippet[0])
@@ -31,6 +31,13 @@ def normalize(snippet):
     # snippet is mono
     rms_amp = (np.dot(snippet, snippet) / len(snippet)) ** 0.5
     return snippet / rms_amp
+
+def stft(snippet, window, hop):
+    fragments = divide(snippet, window, hop)
+    stft_output = []
+    for fragment in fragments:
+        stft_output.append([np.abs(amp) for amp in np.fft.rfft(fragment)[1:]])
+    return np.array(stft_output)
 
 def melSpectrogram(spectrogram):
     mspect = np.zeros((len(spectrogram), 128))
