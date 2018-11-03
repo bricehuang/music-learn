@@ -60,7 +60,7 @@ def train(model, train_loader, optimizer, epoch):
         if batch_idx % 50 == 0:
             print('Train Epoch: {} [{:05d}/{} ({:02.0f}%)]\tLoss: {:.6f}\tAccuracy: {:02.0f}%'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item(), 
+                100. * batch_idx / len(train_loader), loss.item(),
                 100. * sum_num_correct / (num_batches_since_log * train_loader.batch_size))
             )
             sum_num_correct = 0
@@ -72,7 +72,7 @@ def test(model, data):
     with torch.no_grad():
         output = model(data)
     return output
-    
+
 
 def main():
     ##################################################################
@@ -107,7 +107,6 @@ def main():
     for epoch in range(1, params["epochs"] + 1):
         train(model, train_loader, optimizer, epoch)
         test(model, test_loader)
-
 
 if __name__ == '__main__':
     main()
