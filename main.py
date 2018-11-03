@@ -1,5 +1,5 @@
-import inputReader
-import audioPreprocessor as ap
+ar = __import__("audio-read")
+ap = __import__("audio-preprocess")
 import net
 
 
@@ -50,8 +50,8 @@ def batchify(procData, batchsize):
 		M.append(obj)
 	return M
 
-rawTrainingData = inputReader.readTrainingAudio()
-rawTestData = inputReader.readTestAudio()
+rawTrainingData = ar.readTrainingAudio()
+rawTestData = ap.readTestAudio()
 
 procTrainingData = []
 
