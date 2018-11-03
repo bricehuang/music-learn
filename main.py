@@ -5,11 +5,12 @@ import net
 
 import torch
 import torch.nn.functional as F
+import torch.optim as optim
 
 import random
 
-SNIPPET_WINDOW = 0.5*22050
-SNIPPET_HOP = SNIPPET_WINDOW/2
+SNIPPET_WINDOW = int(1.0*44100)
+SNIPPET_HOP = int(SNIPPET_WINDOW/2)
 DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
@@ -41,17 +42,20 @@ def processSnippet(snippet):
 
 def batchify(procData, batchsize):
     random.shuffle(procData)
-    L = zip(*procData)
+    L = list(zip(*procData))
     M = []
     for iStart in range(0, len(procData), batchsize):
         obj = []
         for i in range(len(L)):
-            obj.append(torch.Tensor(L[i][iStart:iStart+batchsize]))
+        	tens = torch.Tensor(L[i][iStart:iStart+batchsize])
+        	if i == 0:	# data needs to have a "channel" dimension
+        		tens = tens.unsqueeze(1)
+        	obj.append(tens)
         M.append(obj)
     return M
 
 rawTrainingData = ar.readTrainingAudio()
-rawTestData = ap.readTestAudio()
+rawTestData = ar.readTestAudio()
 
 procTrainingData = []
 

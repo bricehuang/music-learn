@@ -28,8 +28,12 @@ class Net(nn.Module):
 
 
     def forward(self, x):
-        for i in range(len(channels) - 1):
-            x = self.forward_block(x, channels[i], channels[i+1])
+        print(x.shape)
+        for i in range(len(self.channels) - 1):
+            x = self.forward_block(x, self.channels[i], self.channels[i+1])
+            print(x.shape)
+            if i==1:
+                exit()
         x = F.relu(self.finalConv1(x))
         x = F.relu(self.finalConv2(x))
         x = nn.MaxPool2d(kernel_size=x.shape())(x)
@@ -38,7 +42,6 @@ class Net(nn.Module):
         x = nn.Dropout(p=0.5)(x)
         x = nn.Linear(1024, 11)(x)
         x = nn.Sigmoid()(x)
-
         return x
 
 def train(model, train_loader, optimizer, epoch):
@@ -48,6 +51,7 @@ def train(model, train_loader, optimizer, epoch):
     num_batches_since_log = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
+        print(data.shape)
         output = model(data)
         loss = F.cross_entropy(output, target)
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
