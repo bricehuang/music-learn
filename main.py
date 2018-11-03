@@ -50,12 +50,6 @@ def batchify(procData, batchsize):
         M.append(obj)
     return M
 
-def divide(clip, window, hop):
-    L = []
-    for i in range(0,len(clip),hop):
-        L.append(clip[i:i+window])
-    return L
-
 rawTrainingData = ar.readTrainingAudio()
 rawTestData = ap.readTestAudio()
 

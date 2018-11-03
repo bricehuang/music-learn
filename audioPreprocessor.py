@@ -1,5 +1,11 @@
 import numpy as np
 
+def divide(clip, window, hop):
+    L = []
+    for i in range(0,len(clip),hop):
+        L.append(clip[i:i+window])
+    return L
+
 def toMono(snippet):
     channels = len(snippet[0])
     if channels == 1:
@@ -22,3 +28,6 @@ def normalize(snippet):
     # snippet is mono
     rms_amp = (np.dot(snippet, snippet) / len(snippet)) ** 0.5
     return snippet / rms_amp
+
+def melSpectrogram(spectrogram):
+    
