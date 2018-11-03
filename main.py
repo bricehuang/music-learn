@@ -1,5 +1,5 @@
-ar = __import__("audio-read")
-ap = __import__("audio-preprocess")
+import audioRead as ar
+import audioPreprocessor as ap
 import net
 
 
