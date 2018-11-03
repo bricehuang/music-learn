@@ -1,4 +1,7 @@
 import numpy as np
+import math
+
+STFT_WINDOW_LEN = 1024/22050.0
 
 def divide(clip, window, hop):
     L = []
@@ -30,4 +33,10 @@ def normalize(snippet):
     return snippet / rms_amp
 
 def melSpectrogram(spectrogram):
-    
+    mspect = np.zeros((len(spectrogram), 128))
+    for row in range(len(spectrogram)):
+        for m in range(128):
+            f = 700*(10**(m/104) - 1)
+            col = f*1.0/STFT_WINDOW_LEN
+            mspect[row][m] = spectrogram[row][col]
+    return mspect
