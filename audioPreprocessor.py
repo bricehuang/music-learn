@@ -45,11 +45,8 @@ def melSpectrogram(spectrogram):
         pcol = -1
         for m in range(128):
             f = 700*(10**(m/104) - 1)
-            col = int(np.round(f*1.0/STFT_WINDOW_LEN))
-            if(col >= len(spectrogram[row])):
-                print(m, col)
-                print(len(spectrogram[row]))
-                exit()
+            col = int(np.round(f*STFT_WINDOW_LEN))
+            assert(col < len(spectogram[0]))
             mspect[row][m] = sum(spectrogram[row][(pcol+1):(col+1)])/float(col-pcol)
             pcol = col
     return mspect
