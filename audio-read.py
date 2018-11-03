@@ -28,4 +28,3 @@ def readTestAudio():
             data = read(path+"/"+fname)
             dataList.append((data,labels))
     return dataList
-
