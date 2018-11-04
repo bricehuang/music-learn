@@ -10,8 +10,10 @@ DATA_PATH = "./IRMAS-Sample"
 
 def readTrainingAudio():
     dataList = []
-    path = DATA_PATH + "/Training"
+    path = "./IRMAS-TrainingData"
     for label in os.listdir(path):
+        if not os.path.isdir(path+"/"+label):
+            continue
         for fname in os.listdir(path+"/"+label):
             data = read(path+"/"+label+"/"+fname)
             if len(data) < 3*44100:
@@ -21,7 +23,7 @@ def readTrainingAudio():
 
 def readTestAudio():
     dataList = []
-    path = DATA_PATH + "/Testing"
+    path = "./IRMAS-TestingData-Part1/Part1"
     for fname in os.listdir(path):
         fn, ext = os.path.splitext(fname)
         if ext == ".wav":

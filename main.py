@@ -21,7 +21,7 @@ TRAIN_BATCH = 64
 
 THRESHOLD = 0.1
 
-instruments = ["cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
+instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
 
 def encodeLabels(labels):
     if not type(labels) == list:
@@ -54,26 +54,34 @@ def batchify(procData, batchsize):
         M.append(obj)
     return M
 
-rawTrainingData = ar.readTrainingAudio()
+rawTrainingData = ar.readTrainingAudio()[:1000]
 rawTestData = ar.readTestAudio()
+
+print("Finished reading data")
 
 procTrainingData = []
 
+counter = 0
 for (clip, label) in rawTrainingData:
     snippets = ap.divide(clip, SNIPPET_WINDOW, SNIPPET_WINDOW)
     labelvec = encodeLabels(label)
     for snippet in snippets:
         snippet = processSnippet(snippet)
-        procTrainingData.append((snippet, labelvec))
+        procTrainingData.append((snippet, instruments.index(label)))
+    counter += 1
+    if counter % 10 == 0:
+    	print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
 
 procTrainingData = batchify(procTrainingData, TRAIN_BATCH)
+
+print("Batchified training data")
 
 model = net.Net()
 optimizer = optim.Adam(model.parameters(), lr=LR)
 
 for epoch in range(1, EPOCHS+1):
     net.train(model, procTrainingData, optimizer, epoch)
-
+'''
 procTestData = []
 
 loss = 0
@@ -92,3 +100,4 @@ for i, (clip, labels) in enumerate(rawTestData):
     loss += abs(output - labelvec)
 
 print(loss/len(rawTestData))
+'''
