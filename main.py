@@ -15,7 +15,7 @@ DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
 EPOCHS = 10
-LR = 0.001
+LR = 0.1
 
 TRAIN_BATCH = 5
 
@@ -47,38 +47,39 @@ def batchify(procData, batchsize):
     for iStart in range(0, len(procData), batchsize):
         obj = []
         for i in range(len(L)):
-        	tens = torch.Tensor(L[i][iStart:iStart+batchsize])
-        	if i == 0:	# data needs to have a "channel" dimension
-        		tens = tens.unsqueeze(1)
-        	obj.append(tens)
+            tens = torch.Tensor(L[i][iStart:iStart+batchsize])
+            if i == 0:  # data needs to have a "channel" dimension
+                tens = tens.unsqueeze(1)
+            obj.append(tens)
         M.append(obj)
     return M
 
 try:
-	pfh = open('procTrainingData', 'rb')
-	procTrainingData = pickle.load(pfh)
-	pfh.close()
-	print("Loaded already-processed training data")
+    pfh = open('procTrainingData', 'rb')
+    procTrainingData = pickle.load(pfh)
+    pfh.close()
+    print("Loaded already-processed training data")
 except:
-	rawTrainingData = ar.readTrainingAudio()
+    rawTrainingData = ar.readTrainingAudio()
+    rawTrainingData = rawTrainingData[:25]
 
-	print("Finished reading data")
+    print("Finished reading data")
 
-	procTrainingData = []
+    procTrainingData = []
 
-	counter = 0
-	for (clip, label) in rawTrainingData:
-	    snippets = ap.divide(clip, SNIPPET_WINDOW, SNIPPET_WINDOW)
-	    labelvec = encodeLabels(label)
-	    for snippet in snippets:
-	        snippet = processSnippet(snippet)
-	        procTrainingData.append((snippet, instruments.index(label)))
-	    counter += 1
-	    if counter % 10 == 0:
-	    	print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
-	pfh = open('procTrainingData', 'wb')
-	pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
-	pfh.close() 
+    counter = 0
+    for (clip, label) in rawTrainingData:
+        snippets = ap.divide(clip, SNIPPET_WINDOW, SNIPPET_WINDOW)
+        labelvec = encodeLabels(label)
+        for snippet in snippets:
+            snippet = processSnippet(snippet)
+            procTrainingData.append((snippet, instruments.index(label)))
+        counter += 1
+        if counter % 10 == 0:
+            print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
+    pfh = open('procTrainingData', 'wb')
+    pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
+    pfh.close()
 
 procTrainingData = batchify(procTrainingData, TRAIN_BATCH)
 
@@ -91,7 +92,7 @@ optimizer = optim.SGD(model.parameters(), lr=LR)
 
 for epoch in range(1, 1000+ 1):
     net.train(model, procTrainingData[:3], optimizer, epoch)
-    
+
 '''
 rawTestData = ar.readTestAudio()
 
