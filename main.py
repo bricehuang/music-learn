@@ -1,7 +1,7 @@
 import audioRead as ar
 import audioPreprocessor as ap
 import net
-
+import pickle
 
 import torch
 import torch.nn.functional as F
@@ -15,9 +15,9 @@ DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
 EPOCHS = 10
-LR = 0.01
+LR = 0.001
 
-TRAIN_BATCH = 64
+TRAIN_BATCH = 128
 
 THRESHOLD = 0.1
 
@@ -54,34 +54,46 @@ def batchify(procData, batchsize):
         M.append(obj)
     return M
 
-rawTrainingData = ar.readTrainingAudio()[:1000]
-rawTestData = ar.readTestAudio()
+try:
+	pfh = open('procTrainingData', 'rb')
+	procTrainingData = pickle.load(pfh)
+	pfh.close()
+	print("Loaded already-processed training data")
+except:
+	rawTrainingData = ar.readTrainingAudio()
 
-print("Finished reading data")
+	print("Finished reading data")
 
-procTrainingData = []
+	procTrainingData = []
 
-counter = 0
-for (clip, label) in rawTrainingData:
-    snippets = ap.divide(clip, SNIPPET_WINDOW, SNIPPET_WINDOW)
-    labelvec = encodeLabels(label)
-    for snippet in snippets:
-        snippet = processSnippet(snippet)
-        procTrainingData.append((snippet, instruments.index(label)))
-    counter += 1
-    if counter % 10 == 0:
-    	print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
+	counter = 0
+	for (clip, label) in rawTrainingData:
+	    snippets = ap.divide(clip, SNIPPET_WINDOW, SNIPPET_WINDOW)
+	    labelvec = encodeLabels(label)
+	    for snippet in snippets:
+	        snippet = processSnippet(snippet)
+	        procTrainingData.append((snippet, instruments.index(label)))
+	    counter += 1
+	    if counter % 10 == 0:
+	    	print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
+	pfh = open('procTrainingData', 'wb')
+	pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
+	pfh.close() 
 
 procTrainingData = batchify(procTrainingData, TRAIN_BATCH)
 
 print("Batchified training data")
 
-model = net.Net()
-optimizer = optim.Adam(model.parameters(), lr=LR)
+torch.manual_seed(1)
 
-for epoch in range(1, EPOCHS+1):
-    net.train(model, procTrainingData, optimizer, epoch)
+model = net.Net()
+optimizer = optim.SGD(model.parameters(), lr=LR)
+
+for epoch in range(1, 100):
+    net.train(model, procTrainingData[:3], optimizer, epoch)
 '''
+rawTestData = ar.readTestAudio()
+
 procTestData = []
 
 loss = 0

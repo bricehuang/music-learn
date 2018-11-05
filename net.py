@@ -28,17 +28,17 @@ class Net(nn.Module):
 
 
     def forward(self, x):
-        print(x.shape)
+        #print(x.shape)
         for i in range(len(self.channels) - 1):
             x = self.forward_block(x, self.channels[i], self.channels[i+1])
         x = F.relu(self.finalConv1(x))
         x = F.relu(self.finalConv2(x))
         x = nn.MaxPool2d(kernel_size=x.shape[2:])(x)
-        print(x.shape)
+        #print(x.shape)
         x = x.view(-1, 256)
-        x = nn.Linear(256,1024)(x)
+        x = F.relu(nn.Linear(256,1024)(x))
         x = nn.Dropout(p=0.5)(x)
-        x = nn.Linear(1024, 11)(x)
+        x = F.relu(nn.Linear(1024, 11)(x))
         x = nn.Sigmoid()(x)
         return x
 
@@ -62,11 +62,11 @@ def train(model, train_loader, optimizer, epoch):
         num_batches_since_log += 1
         loss.backward()
         optimizer.step()
-        if batch_idx % 50 == 0:
+        if batch_idx % 50 == 49:
             print('Train Epoch: {} [{:05d}/{} ({:02.0f}%)]\tLoss: {:.6f}\tAccuracy: {:02.0f}%'.format(
                 epoch, batch_idx * len(data), len(train_loader),
                 100. * batch_idx / len(train_loader), loss.item(),
-                100. * sum_num_correct / (num_batches_since_log * 64))
+                100. * sum_num_correct / (num_batches_since_log * 128))
             )
             sum_num_correct = 0
             sum_loss = 0
