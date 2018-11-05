@@ -15,9 +15,9 @@ DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
 EPOCHS = 10
-LR = 0.001
+LEARNING_RATE = 0.0
 
-TRAIN_BATCH = 5
+TRAIN_BATCH = 128
 
 THRESHOLD = 0.1
 
@@ -82,16 +82,17 @@ except:
 
 procTrainingData = batchify(procTrainingData, TRAIN_BATCH)
 
+
 print("Batchified training data")
 
 torch.manual_seed(1)
 
 model = net.Net()
-optimizer = optim.SGD(model.parameters(), lr=LR)
+optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE)
 
-for epoch in range(1, 1000+ 1):
-    net.train(model, procTrainingData[:3], optimizer, epoch)
-    
+for epoch in range(10):
+    net.train(model, procTrainingData, optimizer, epoch)
+   
 '''
 rawTestData = ar.readTestAudio()
 
