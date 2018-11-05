@@ -32,7 +32,7 @@ class Net(nn.Module):
         x = x.view(-1, x.shape[2]*x.shape[3])
         #print(x.shape)
         x = F.relu(nn.Linear(x.shape[1], 1024)(x))
-        x = F.relu(nn.Linear(1024, 11)(x))
+        x = nn.Linear(1024, 11)(x)
         x = nn.Sigmoid()(x)
         return x
 
