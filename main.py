@@ -17,7 +17,7 @@ FFT_HOP = 512
 EPOCHS = 10
 LR = 0.001
 
-TRAIN_BATCH = 128
+TRAIN_BATCH = 5
 
 THRESHOLD = 0.1
 
@@ -89,8 +89,9 @@ torch.manual_seed(1)
 model = net.Net()
 optimizer = optim.SGD(model.parameters(), lr=LR)
 
-for epoch in range(1, 100):
+for epoch in range(1, 1000+ 1):
     net.train(model, procTrainingData[:3], optimizer, epoch)
+    
 '''
 rawTestData = ar.readTestAudio()
 

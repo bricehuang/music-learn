@@ -10,7 +10,7 @@ def divide(clip, window, hop):
     return np.array(L)
 
 def toMono(snippet):
-    channels = len(snippet[0])
+    channels = len(snippet.shape)
     if channels == 1:
         # already mono
         return snippet
