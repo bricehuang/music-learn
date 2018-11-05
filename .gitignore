@@ -1,0 +1,4 @@
+*.pyc
+IRMAS-TrainingData/*
+procTrainingData
+
