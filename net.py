@@ -8,14 +8,14 @@ from torchvision import datasets, transforms
 import audioPreprocessor
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, numClasses):
         super(Net, self).__init__()
         self.channels = [1, 32, 64, 128]
         self.finalConv1 = nn.Conv2d(128, 256, kernel_size=3, padding=2)
         self.finalConv2 = nn.Conv2d(256, 256, kernel_size=3, padding=2)
         self.finalPool1 = nn.MaxPool2d(kernel_size=(7, 10))
         self.finalfc1 = nn.Linear(256, 1024)
-        self.finalfc2 = nn.Linear(1024, 11)
+        self.finalfc2 = nn.Linear(1024, numClasses)
         self.finaldrop = nn.Dropout(p=0.5)
         self.finalsig = nn.Sigmoid()
 
@@ -32,7 +32,7 @@ class Net(nn.Module):
 
     def forward_block(self, x, ind):
         x = F.relu(self.conv1[ind](x))
-        x = F.relu(self.conv2[ind](x))
+        x = self.conv2[ind](x)
         x = self.pool3[ind](x)
         x = self.drop4[ind](x)
         return x
@@ -43,13 +43,13 @@ class Net(nn.Module):
         for i in range(len(self.channels) - 1):
             x = self.forward_block(x, i)
         x = F.relu(self.finalConv1(x))
-        x = F.relu(self.finalConv2(x))
+        x = self.finalConv2(x)
         x = self.finalPool1(x)
         #print(x.shape)
         x = x.view(-1, 256)
         x = F.relu(self.finalfc1(x))
         x = self.finaldrop(x)
-        x = F.relu(self.finalfc2(x))
+        x = self.finalfc2(x)
         x = self.finalsig(x)
         return x
 
@@ -65,6 +65,8 @@ def train(model, train_loader, optimizer, epoch):
         optimizer.zero_grad()
         #print(data[0])
         output = model(data)
+        #print(output)
+        #print(target)
         target = target.long()
         #print(output)
         #print(target)

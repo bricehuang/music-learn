@@ -15,13 +15,16 @@ DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
 EPOCHS = 10
-LEARNING_RATE = 0.0
+LEARNING_RATE = 0.001
 
 TRAIN_BATCH = 128
 
 THRESHOLD = 0.1
 
 instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
+
+CLASSES = [6, 9, 10]
+VALIDATION_FRAC = 0.15
 
 def encodeLabels(labels):
     if not type(labels) == list:
@@ -81,18 +84,41 @@ except:
     pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
     pfh.close()
 
-procTrainingData = batchify(procTrainingData, TRAIN_BATCH)
+filteredTrainingData = []
+count = [0]*11
+for data in procTrainingData:
+    if data[1] in CLASSES:
+        data = (data[0], CLASSES.index(data[1]))
+        filteredTrainingData.append(data)
 
+random.shuffle(filteredTrainingData)
+N = len(filteredTrainingData)
+V = int(N*VALIDATION_FRAC)
+filteredValidationData = filteredTrainingData[:V]
+filteredTrainingData = filteredTrainingData[V:]
+
+
+batchTrainingData = batchify(filteredTrainingData, TRAIN_BATCH)
+batchValidationData = batchify(filteredValidationData, TRAIN_BATCH)
 
 print("Batchified training data")
 
 torch.manual_seed(1)
 
-model = net.Net()
-optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE)
+model = net.Net(len(CLASSES))
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-for epoch in range(1, 1000+ 1):
-    net.train(model, procTrainingData[:3], optimizer, epoch)
+for epoch in range(1, 1000 + 1):
+    net.train(model, batchTrainingData, optimizer, epoch)
+    totalCorrect = 0
+    total = 0
+    for batch in batchValidationData:
+        output = net.test(model, batch[0])
+        pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
+        totalCorrect += pred.eq(batch[1].long().view_as(pred)).sum().item()
+        total += len(batch[0])
+    print("Test accuracy:" + str(100*totalCorrect/total) + "%")
+
 
 '''
 rawTestData = ar.readTestAudio()
