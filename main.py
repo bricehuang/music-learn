@@ -1,7 +1,10 @@
 import audioRead as ar
 import audioPreprocessor as ap
 import net
+
 import pickle
+
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn.functional as F
@@ -23,7 +26,7 @@ THRESHOLD = 0.1
 
 instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
 
-CLASSES = [6, 9, 10]
+CLASSES = range(11)
 VALIDATION_FRAC = 0.15
 
 def encodeLabels(labels):
@@ -39,8 +42,9 @@ def processSnippet(snippet):
     snippet = ap.downsample(snippet, DOWNSAMPLE_RATE)
     snippet = ap.normalize(snippet)
     snippet = ap.stft(snippet, FFT_WINDOW, FFT_HOP)
-    snippet = ap.melSpectrogram(snippet)
-    snippet = ap.logCompress(snippet)
+#    print(torch.Tensor(snippet).shape)
+#    snippet = ap.melSpectrogram(snippet)
+#    snippet = ap.logCompress(snippet)
     return snippet
 
 def batchify(procData, batchsize):
@@ -64,7 +68,8 @@ try:
     print("Loaded already-processed training data")
 except:
     rawTrainingData = ar.readTrainingAudio()
-    rawTrainingData = rawTrainingData[:25]
+    random.shuffle(rawTrainingData)
+    rawTrainingData = rawTrainingData
 
     print("Finished reading data")
 
@@ -80,23 +85,27 @@ except:
         counter += 1
         if counter % 10 == 0:
             print("Processed " + str(counter) + "/" + str(len(rawTrainingData)) + " training clips")
-    pfh = open('procTrainingData', 'wb')
+    pfh = open('procTrainingDataUmel', 'wb')
     pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
     pfh.close()
+
+random.shuffle(procTrainingData)
 
 filteredTrainingData = []
 count = [0]*11
 for data in procTrainingData:
     if data[1] in CLASSES:
+#        print(data[1])
         data = (data[0], CLASSES.index(data[1]))
         filteredTrainingData.append(data)
+#        plt.imshow(data[0], cmap='hot', interpolation='nearest')
+#        plt.show()
 
 random.shuffle(filteredTrainingData)
 N = len(filteredTrainingData)
 V = int(N*VALIDATION_FRAC)
 filteredValidationData = filteredTrainingData[:V]
 filteredTrainingData = filteredTrainingData[V:]
-
 
 batchTrainingData = batchify(filteredTrainingData, TRAIN_BATCH)
 batchValidationData = batchify(filteredValidationData, TRAIN_BATCH)
@@ -108,7 +117,7 @@ torch.manual_seed(1)
 model = net.Net(len(CLASSES))
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-for epoch in range(1, 1000 + 1):
+for epoch in range(1, 500):
     net.train(model, batchTrainingData, optimizer, epoch)
     totalCorrect = 0
     total = 0
