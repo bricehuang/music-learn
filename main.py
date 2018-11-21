@@ -6,6 +6,8 @@ import pickle
 
 import matplotlib.pyplot as plt
 
+import numpy as np
+
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
@@ -48,7 +50,7 @@ def processSnippet(snippet):
     return snippet
 
 def batchify(procData, batchsize):
-    random.shuffle(procData)
+    #random.shuffle(procData)
     L = list(zip(*procData))
     M = []
     for iStart in range(0, len(procData), batchsize):
@@ -89,7 +91,8 @@ except:
     pickle.dump(procTrainingData, pfh, pickle.HIGHEST_PROTOCOL)
     pfh.close()
 
-random.shuffle(procTrainingData)
+#random.shuffle(procTrainingData)
+random.Random(4).shuffle(procTrainingData)
 
 filteredTrainingData = []
 count = [0]*11
@@ -101,7 +104,7 @@ for data in procTrainingData:
 #        plt.imshow(data[0], cmap='hot', interpolation='nearest')
 #        plt.show()
 
-random.shuffle(filteredTrainingData)
+#random.shuffle(filteredTrainingData)
 N = len(filteredTrainingData)
 V = int(N*VALIDATION_FRAC)
 filteredValidationData = filteredTrainingData[:V]
@@ -117,16 +120,21 @@ torch.manual_seed(1)
 model = net.Net(len(CLASSES))
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-for epoch in range(1, 500):
+for epoch in range(1, 2):
     net.train(model, batchTrainingData, optimizer, epoch)
     totalCorrect = 0
     total = 0
+    dist = np.zeros((11,11))
     for batch in batchValidationData:
         output = net.test(model, batch[0])
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
-        totalCorrect += pred.eq(batch[1].long().view_as(pred)).sum().item()
+        target = batch[1].long().view_as(pred)
+        totalCorrect += pred.eq(target).sum().item()
         total += len(batch[0])
+        for i in range(len(pred)):
+            dist[target[i]][pred[i]] += 1
     print("Test accuracy:" + str(100*totalCorrect/total) + "%")
+    print(dist)
 
 
 '''
