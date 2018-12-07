@@ -11,6 +11,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+import torchvision.models.resnet as resnet
+
+import stats
 
 import random
 
@@ -93,6 +96,7 @@ except:
 
 #random.shuffle(procTrainingData)
 random.Random(4).shuffle(procTrainingData)
+procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
 
 filteredTrainingData = []
 count = [0]*11
@@ -101,8 +105,17 @@ for data in procTrainingData:
 #        print(data[1])
         data = (data[0], CLASSES.index(data[1]))
         filteredTrainingData.append(data)
+        count[data[1]] += 1
 #        plt.imshow(data[0], cmap='hot', interpolation='nearest')
 #        plt.show()
+
+classSize = min(count)
+cutFilteredTrainingData = []
+for data in filteredTrainingData:
+#    if random.randint(1, count[data[1]]) <= classSize:
+    if random.randint(1,sum(count)) <= len(CLASSES)*classSize:
+        cutFilteredTrainingData.append(data)
+filteredTrainingData = cutFilteredTrainingData
 
 #random.shuffle(filteredTrainingData)
 N = len(filteredTrainingData)
@@ -118,13 +131,21 @@ print("Batchified training data")
 torch.manual_seed(1)
 
 model = net.Net(len(CLASSES))
+#model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
+#model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-for epoch in range(1, 2):
-    net.train(model, batchTrainingData, optimizer, epoch)
+lTrainAcc = []
+lTestAcc = []
+lF1 = []
+
+for epoch in range(1, 100):
+    trainAcc = net.train(model, batchTrainingData, optimizer, epoch)
+    lTrainAcc.append(trainAcc)
     totalCorrect = 0
     total = 0
     dist = np.zeros((11,11))
+    countTargets = np.zeros((11))
     for batch in batchValidationData:
         output = net.test(model, batch[0])
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
@@ -133,8 +154,15 @@ for epoch in range(1, 2):
         total += len(batch[0])
         for i in range(len(pred)):
             dist[target[i]][pred[i]] += 1
+            countTargets[target[i]] += 1
     print("Test accuracy:" + str(100*totalCorrect/total) + "%")
     print(dist)
+    lTestAcc.append(100*totalCorrect/total)
+    lF1.append(stats.F1overall(np.array(dist)))
+    print(lTrainAcc)
+    print(lTestAcc)
+    print(lF1)
+#    woah = input("Enter  to continue...")
 
 
 '''

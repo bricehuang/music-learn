@@ -9,8 +9,12 @@ import numpy as np
 import audioPreprocessor
 
 class Net(nn.Module):
-	def __init__(self, numClasses):
+	def __init__(self, numClasses,include_dropout = True):
 		super(Net, self).__init__()
+		
+		self.include_dropout = include_dropout
+		self.include_res = include_res
+
 		self.channels = [1, 32, 64, 128]
 		self.finalConv1 = nn.Conv2d(128, 256, kernel_size=3, padding=2)
 		self.finalConv2 = nn.Conv2d(256, 256, kernel_size=3, padding=2)
@@ -39,7 +43,8 @@ class Net(nn.Module):
 		x = F.relu(self.conv1[ind](x))
 		x = self.conv2[ind](x)
 		x = self.pool3[ind](x)
-		x = self.drop4[ind](x)
+		if self.include_dropout:
+			x = self.drop4[ind](x)
 		return x
 
 
@@ -53,10 +58,63 @@ class Net(nn.Module):
 		#print(x.shape)
 		x = x.view(-1, 256)
 		x = F.relu(self.finalfc1(x))
-		x = self.finaldrop(x)
+		if self.include_dropout:
+			x = self.finaldrop(x)
 		x = self.finalfc2(x)
 		x = self.finalsig(x)
 		return x
+
+class ResNet(nn.Module):
+	def __init__(self, numClasses):
+		super(ResNet, self).__init__()
+
+		self.channels = [1, 32, 64, 128]
+		self.finalPool = nn.MaxPool2d(kernel_size=(1,4))
+		self.finalfc1 = nn.Linear(128, 1024)
+		self.finalfc2 = nn.Linear(1024, numClasses)
+		self.finalsig = nn.Sigmoid()
+
+		self.conv1 = []
+		self.conv2 = []
+		self.conv3 = []
+		self.conv4 = []
+		self.conv5 = []
+		self.conv6 = []
+		self.pool = []
+		for i in range(len(self.channels) - 1):
+			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=1))
+			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
+			self.conv3.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
+			self.conv4.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
+			self.conv5.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
+			self.conv6.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
+
+			self.pool.append(nn.MaxPool2d(kernel_size=3))
+
+
+	def forward_block(self, x, ind):
+		y = F.relu(self.conv1[ind](x))
+		y = F.relu(self.conv2[ind](y))
+		z = F.relu(self.conv3[ind](y))
+		z = F.relu(self.conv4[ind](z) + y)
+		w = F.relu(self.conv5[ind](z))
+		w = F.relu(self.conv6[ind](w) + z)
+		w = self.pool[ind](w)
+		return w
+
+
+	def forward(self, x):
+		#print(x.shape)
+		for i in range(len(self.channels) - 1):
+			x = self.forward_block(x, i)
+			print(x.shape)
+		x = self.finalPool(x)
+		x = x.view(-1, 128)
+		x = F.relu(self.finalfc1(x))
+		x = self.finalfc2(x)
+		x = self.finalsig(x)
+		return x
+
 
 
 def train(model, train_loader, optimizer, epoch):
@@ -66,15 +124,13 @@ def train(model, train_loader, optimizer, epoch):
 	sum_loss = 0
 	num_batches_since_log = 0
 	for batch_idx, (data, target) in enumerate(train_loader):
-		if batch_idx == 112:
-			continue
 		print("Batch index " + str(batch_idx) + "/" + str(len(train_loader)))
 		optimizer.zero_grad()
 		#print(data[0])
 		output = model(data)
-		print(list(output))
-		print(target)
-		if (output < 1.0e-10).any():
+#		print(list(output))
+#		print(target)
+		if (output < 1.0e-30).any():
 			exit()
 		target = target.long()
 		#print(output)
@@ -84,7 +140,7 @@ def train(model, train_loader, optimizer, epoch):
 		correct = pred.eq(target.view_as(pred)).sum().item()
 		sum_num_correct += correct
 		sum_loss += loss.item()
-		print(loss.item())
+#		print(loss.item())
 		num_batches_since_log += 1
 		loss.backward()
 		optimizer.step()
@@ -94,9 +150,10 @@ def train(model, train_loader, optimizer, epoch):
 				100. * batch_idx / len(train_loader), loss.item(),
 				100. * sum_num_correct / (num_batches_since_log * 128))
 			)
-			sum_num_correct = 0
-			sum_loss = 0
-			num_batches_since_log = 0
+			return 100. * sum_num_correct / (num_batches_since_log * 128)
+#			sum_num_correct = 0
+#			sum_loss = 0
+#			num_batches_since_log = 0
 
 def test(model, data):
 	model.eval()
