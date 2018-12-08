@@ -32,6 +32,7 @@ THRESHOLD = 0.1
 instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(torch.cuda.is_available())
 
 CLASSES = range(11)
 VALIDATION_FRAC = 0.15
