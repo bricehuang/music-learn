@@ -133,7 +133,7 @@ torch.manual_seed(1)
 model = net.Net(len(CLASSES))
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
-model.cuda()
+model = model.cuda()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 lTrainAcc = []
