@@ -118,6 +118,7 @@ class ResNet(nn.Module):
 
 def train(model, device, train_loader, optimizer, epoch):
 	print("Training epoch" + str(epoch))
+	model.to(device)
 	model.train()
 	sum_num_correct = 0
 	sum_loss = 0
