@@ -157,7 +157,7 @@ def train(model, device, train_loader, optimizer, epoch):
 #		print(next(model.parameters()).is_cuda)
 #		print(data.is_cuda)
 		output = model(data)
-		print(list(output))
+#		print(list(output))
 #		print(target)
 		if (output < 1.0e-30).any():
 			print(batch_idx)
@@ -172,7 +172,7 @@ def train(model, device, train_loader, optimizer, epoch):
 		sum_num_correct += correct
 		sum_loss += loss.item()
 		print(loss.item())
-		x = input("Enter to continue: ")
+#		x = input("Enter to continue: ")
 		num_batches_since_log += 1
 		loss.backward()
 		optimizer.step()
