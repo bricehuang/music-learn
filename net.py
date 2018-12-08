@@ -25,17 +25,15 @@ class Net(nn.Module):
 		self.finalleaky1 = nn.LeakyReLU(0.1)
 		self.finalleaky2 = nn.LeakyReLU(0.1)
 
-		self.conv1 = []
-		self.conv2 = []
-		self.pool3 = []
-		self.drop4 = []
-		self.leaky = []
+		self.conv1 = torch.nn.ModuleList()
+		self.conv2 = torch.nn.ModuleList()
+		self.pool3 = torch.nn.ModuleList()
+		self.drop4 = torch.nn.ModuleList()
 		for i in range(len(self.channels) - 1):
 			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=2))
 			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=2))
 			self.pool3.append(nn.MaxPool2d(kernel_size=3))
 			self.drop4.append(nn.Dropout(p=0.25))
-			self.leaky.append(nn.LeakyReLU(0.1))
 
 
 	def forward_block(self, x, ind):
