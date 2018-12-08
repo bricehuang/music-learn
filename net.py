@@ -171,7 +171,7 @@ def train(model, device, train_loader, optimizer, epoch):
 		correct = pred.eq(target.view_as(pred)).sum().item()
 		sum_num_correct += correct
 		sum_loss += loss.item()
-#		print(loss.item())
+		print(loss.item())
 		num_batches_since_log += 1
 		loss.backward()
 		optimizer.step()
