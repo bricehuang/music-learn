@@ -133,6 +133,7 @@ def train(model, device, train_loader, optimizer, epoch):
 #		print(list(output))
 #		print(target)
 		if (output < 1.0e-30).any():
+			print("failure")
 			exit()
 		target = target.long().to(device)
 		#print(output)
