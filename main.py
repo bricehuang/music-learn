@@ -150,11 +150,13 @@ for epoch in range(1, 100):
     dist = np.zeros((11,11))
     countTargets = np.zeros((11))
     for batch in batchValidationData:
-        output = net.test(model, device, batch[0])
+        data = batch[0].to(device)
+        target = batch[1].to(device)
+        output = net.test(model, device, data)
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
-        target = batch[1].long().view_as(pred)
+        target = target.long().view_as(pred)
         totalCorrect += pred.eq(target).sum().item()
-        total += len(batch[0])
+        total += len(data)
         for i in range(len(pred)):
             dist[target[i]][pred[i]] += 1
             countTargets[target[i]] += 1
