@@ -134,7 +134,7 @@ def train(model, device, train_loader, optimizer, epoch):
 #		print(target)
 		if (output < 1.0e-30).any():
 			exit()
-		target = target.long()
+		target = target.long().to(device)
 		#print(output)
 		#print(target)
 		loss = F.cross_entropy(output, target)
