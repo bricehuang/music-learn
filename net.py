@@ -13,7 +13,6 @@ class Net(nn.Module):
 		super(Net, self).__init__()
 		
 		self.include_dropout = include_dropout
-		self.include_res = include_res
 
 		self.channels = [1, 32, 64, 128]
 		self.finalConv1 = nn.Conv2d(128, 256, kernel_size=3, padding=2)
