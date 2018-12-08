@@ -157,7 +157,7 @@ def train(model, device, train_loader, optimizer, epoch):
 #		print(next(model.parameters()).is_cuda)
 #		print(data.is_cuda)
 		output = model(data)
-#		print(list(output))
+		print(list(output))
 #		print(target)
 		if (output < 1.0e-30).any():
 			print(batch_idx)
