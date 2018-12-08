@@ -130,6 +130,7 @@ def train(model, device, train_loader, optimizer, epoch):
 		optimizer.zero_grad()
 		#print(data[0])
 		print(next(model.parameters()).is_cuda)
+		print(type(data))
 		output = model(data)
 #		print(list(output))
 #		print(target)
