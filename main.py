@@ -98,10 +98,10 @@ except:
 
 #random.shuffle(procTrainingData)
 random.Random(4).shuffle(procTrainingData)
-if torch.cuda.is_available():
-    procTrainingData = procTrainingData[:2998+128*8] + procTrainingData[2998+128*9:]
-else:
-    procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
+#if torch.cuda.is_available():
+#    procTrainingData = procTrainingData[:2998+128*8] + procTrainingData[2998+128*9:]
+#else:
+#    procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
 
 filteredTrainingData = []
 count = [0]*11
@@ -117,7 +117,7 @@ for data in procTrainingData:
 #classSize = min(count)
 #cutFilteredTrainingData = []
 #for data in filteredTrainingData:
-#    if random.randint(1, count[data[1]]) <= classSize:
+##    if random.randint(1, count[data[1]]) <= classSize:
 #    if random.randint(1,sum(count)) <= len(CLASSES)*classSize:
 #        cutFilteredTrainingData.append(data)
 #filteredTrainingData = cutFilteredTrainingData

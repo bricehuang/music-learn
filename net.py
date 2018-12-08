@@ -25,15 +25,28 @@ class Net(nn.Module):
 		self.finalleaky1 = nn.LeakyReLU(0.1)
 		self.finalleaky2 = nn.LeakyReLU(0.1)
 
-		self.conv1 = torch.nn.ModuleList()
-		self.conv2 = torch.nn.ModuleList()
-		self.pool3 = torch.nn.ModuleList()
-		self.drop4 = torch.nn.ModuleList()
-		for i in range(len(self.channels) - 1):
-			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=2))
-			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=2))
-			self.pool3.append(nn.MaxPool2d(kernel_size=3))
-			self.drop4.append(nn.Dropout(p=0.25))
+		self.conv1 = nn.Conv2d(1,32,kernel_size = 3, padding=2)
+		self.conv2 = nn.Conv2d(32,32,kernel_size=3,padding=2)
+		self.pool3 = nn.MaxPool2d(kernel_size=3)
+		self.drop4 = nn.Dropout(p=0.25)
+		self.conv5 = nn.Conv2d(32,64,kernel_size = 3, padding=2)
+		self.conv6 = nn.Conv2d(64,64,kernel_size=3,padding=2)
+		self.pool7 = nn.MaxPool2d(kernel_size=3)
+		self.drop8 = nn.Dropout(p=0.25)
+		self.conv9 = nn.Conv2d(64,128,kernel_size = 3, padding=2)
+		self.conv10 = nn.Conv2d(128,128,kernel_size=3,padding=2)
+		self.pool11 = nn.MaxPool2d(kernel_size=3)
+		self.drop12 = nn.Dropout(p=0.25)
+
+#		self.conv1 = torch.nn.ModuleList()
+#		self.conv2 = torch.nn.ModuleList()
+#		self.pool3 = torch.nn.ModuleList()
+#		self.drop4 = torch.nn.ModuleList()
+#		for i in range(len(self.channels) - 1):
+#			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=2))
+#			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=2))
+#			self.pool3.append(nn.MaxPool2d(kernel_size=3))
+#			self.drop4.append(nn.Dropout(p=0.25))
 
 
 	def forward_block(self, x, ind):
@@ -47,8 +60,22 @@ class Net(nn.Module):
 
 	def forward(self, x):
 		#print(x.shape)
-		for i in range(len(self.channels) - 1):
-			x = self.forward_block(x, i)
+#		for i in range(len(self.channels) - 1):
+#			x = self.forward_block(x, i)
+		x = F.relu(self.conv1(x))
+		x = self.conv2(x)
+		x = self.pool3(x)
+		x = self.drop4(x)
+		x = F.relu(self.conv5(x))
+		x = self.conv6(x)
+		x = self.pool7(x)
+		x = self.drop8(x)
+		x = F.relu(self.conv9(x))
+		x = self.conv10(x)
+		x = self.pool11(x)
+		x = self.drop12(x)
+
+
 		x = F.relu(self.finalConv1(x))
 		x = self.finalConv2(x)
 		x = self.finalPool1(x)
