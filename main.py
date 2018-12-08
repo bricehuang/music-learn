@@ -111,13 +111,13 @@ for data in procTrainingData:
 #        plt.imshow(data[0], cmap='hot', interpolation='nearest')
 #        plt.show()
 
-classSize = min(count)
-cutFilteredTrainingData = []
-for data in filteredTrainingData:
+#classSize = min(count)
+#cutFilteredTrainingData = []
+#for data in filteredTrainingData:
 #    if random.randint(1, count[data[1]]) <= classSize:
-    if random.randint(1,sum(count)) <= len(CLASSES)*classSize:
-        cutFilteredTrainingData.append(data)
-filteredTrainingData = cutFilteredTrainingData
+#    if random.randint(1,sum(count)) <= len(CLASSES)*classSize:
+#        cutFilteredTrainingData.append(data)
+#filteredTrainingData = cutFilteredTrainingData
 
 #random.shuffle(filteredTrainingData)
 N = len(filteredTrainingData)
