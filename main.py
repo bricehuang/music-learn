@@ -59,7 +59,7 @@ def batchify(procData, batchsize):
     for iStart in range(0, len(procData), batchsize):
         obj = []
         for i in range(len(L)):
-            tens = torch.Tensor(L[i][iStart:iStart+batchsize])
+            tens = torch.Tensor(L[i][iStart:iStart+batchsize]).cuda()
             if i == 0:  # data needs to have a "channel" dimension
                 tens = tens.unsqueeze(1)
             obj.append(tens)
@@ -141,14 +141,14 @@ lTestAcc = []
 lF1 = []
 
 for epoch in range(1, 100):
-    trainAcc = net.train(model, batchTrainingData.cuda(), optimizer, epoch)
+    trainAcc = net.train(model, batchTrainingData, optimizer, epoch)
     lTrainAcc.append(trainAcc)
     totalCorrect = 0
     total = 0
     dist = np.zeros((11,11))
     countTargets = np.zeros((11))
     for batch in batchValidationData:
-        output = net.test(model, batch[0].cuda())
+        output = net.test(model, batch[0])
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
         target = batch[1].long().view_as(pred)
         totalCorrect += pred.eq(target).sum().item()
