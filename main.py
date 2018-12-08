@@ -31,6 +31,8 @@ THRESHOLD = 0.1
 
 instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 CLASSES = range(11)
 VALIDATION_FRAC = 0.15
 
@@ -59,7 +61,7 @@ def batchify(procData, batchsize):
     for iStart in range(0, len(procData), batchsize):
         obj = []
         for i in range(len(L)):
-            tens = torch.Tensor(L[i][iStart:iStart+batchsize]).cuda()
+            tens = torch.Tensor(L[i][iStart:iStart+batchsize]).to(device)
             if i == 0:  # data needs to have a "channel" dimension
                 tens = tens.unsqueeze(1)
             obj.append(tens)
@@ -130,10 +132,9 @@ print("Batchified training data")
 
 torch.manual_seed(1)
 
-model = net.Net(len(CLASSES))
+model = net.Net(len(CLASSES)).to(device)
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
-model = model.cuda()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 lTrainAcc = []
