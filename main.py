@@ -97,6 +97,8 @@ except:
     pfh.close()
 
 #random.shuffle(procTrainingData)
+lst = range(len(procTrainingData))
+random.Random(4).shuffle(lst)
 random.Random(4).shuffle(procTrainingData)
 procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
 
