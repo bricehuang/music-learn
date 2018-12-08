@@ -133,6 +133,7 @@ torch.manual_seed(1)
 model = net.Net(len(CLASSES))
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
+model.cuda()
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 lTrainAcc = []
@@ -140,14 +141,14 @@ lTestAcc = []
 lF1 = []
 
 for epoch in range(1, 100):
-    trainAcc = net.train(model, batchTrainingData, optimizer, epoch)
+    trainAcc = net.train(model, batchTrainingData.cuda(), optimizer, epoch)
     lTrainAcc.append(trainAcc)
     totalCorrect = 0
     total = 0
     dist = np.zeros((11,11))
     countTargets = np.zeros((11))
     for batch in batchValidationData:
-        output = net.test(model, batch[0])
+        output = net.test(model, batch[0].cuda())
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
         target = batch[1].long().view_as(pred)
         totalCorrect += pred.eq(target).sum().item()
