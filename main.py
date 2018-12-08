@@ -98,8 +98,8 @@ except:
 
 #random.shuffle(procTrainingData)
 random.Random(4).shuffle(procTrainingData)
-#if torch.cuda.is_available():
-#    procTrainingData = procTrainingData[:2998+128*8] + procTrainingData[2998+128*9:]
+if torch.cuda.is_available():
+    procTrainingData = procTrainingData[:2998+128*51] + procTrainingData[2998+128*52:]
 #else:
 #    procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
 
