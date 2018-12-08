@@ -32,7 +32,6 @@ THRESHOLD = 0.1
 instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "vio", "voi"]
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(torch.cuda.is_available())
 
 CLASSES = range(11)
 VALIDATION_FRAC = 0.15
@@ -62,7 +61,7 @@ def batchify(procData, batchsize):
     for iStart in range(0, len(procData), batchsize):
         obj = []
         for i in range(len(L)):
-            tens = torch.Tensor(L[i][iStart:iStart+batchsize]).to(device)
+            tens = torch.Tensor(L[i][iStart:iStart+batchsize])
             if i == 0:  # data needs to have a "channel" dimension
                 tens = tens.unsqueeze(1)
             obj.append(tens)
@@ -134,7 +133,6 @@ print("Batchified training data")
 torch.manual_seed(1)
 
 model = net.Net(len(CLASSES)).to(device)
-model.cuda()
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
 optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -144,14 +142,14 @@ lTestAcc = []
 lF1 = []
 
 for epoch in range(1, 100):
-    trainAcc = net.train(model, batchTrainingData, optimizer, epoch)
+    trainAcc = net.train(model, device, batchTrainingData, optimizer, epoch)
     lTrainAcc.append(trainAcc)
     totalCorrect = 0
     total = 0
     dist = np.zeros((11,11))
     countTargets = np.zeros((11))
     for batch in batchValidationData:
-        output = net.test(model, batch[0])
+        output = net.test(model, device, batch[0])
         pred = output.max(1, keepdim=True)[1] # get the index of the max log-probability
         target = batch[1].long().view_as(pred)
         totalCorrect += pred.eq(target).sum().item()

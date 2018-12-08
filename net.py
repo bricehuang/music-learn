@@ -116,13 +116,15 @@ class ResNet(nn.Module):
 
 
 
-def train(model, train_loader, optimizer, epoch):
+def train(model, device, train_loader, optimizer, epoch):
 	print("Training epoch" + str(epoch))
 	model.train()
 	sum_num_correct = 0
 	sum_loss = 0
 	num_batches_since_log = 0
 	for batch_idx, (data, target) in enumerate(train_loader):
+		data = data.to(device)
+		target = target.to(device)
 		print("Batch index " + str(batch_idx) + "/" + str(len(train_loader)))
 		optimizer.zero_grad()
 		#print(data[0])
@@ -154,8 +156,9 @@ def train(model, train_loader, optimizer, epoch):
 #			sum_loss = 0
 #			num_batches_since_log = 0
 
-def test(model, data):
+def test(model, device, data):
 	model.eval()
 	with torch.no_grad():
+		data = data.to(device)
 		output = model(data)
 	return output
