@@ -23,7 +23,7 @@ DOWNSAMPLE_RATE = 0.5
 FFT_WINDOW = 1024
 FFT_HOP = 512
 EPOCHS = 10
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.0001
 
 TRAIN_BATCH = 128
 
@@ -100,6 +100,8 @@ except:
 random.Random(4).shuffle(procTrainingData)
 if torch.cuda.is_available():
     procTrainingData = procTrainingData[:2998+128*51] + procTrainingData[2998+128*52:2998+128*85] + procTrainingData[2998+128*86:2998+128*109] + procTrainingData[2998+128*111:]
+else:
+    procTrainingData = procTrainingData[:2998+128*92] + procTrainingData[2998+128*93:2998+128*112] + procTrainingData[2998+128*113:]
 #else:
 #    procTrainingData = procTrainingData[:2998+128*112] + procTrainingData[2998+128*113:]
 
