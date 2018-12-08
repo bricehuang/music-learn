@@ -134,6 +134,7 @@ def train(model, device, train_loader, optimizer, epoch):
 #		print(target)
 		if (output < 1.0e-30).any():
 			print(batch_idx)
+			print(target)
 			exit()
 		target = target.long().to(device)
 		#print(output)
