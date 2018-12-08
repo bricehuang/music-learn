@@ -118,7 +118,7 @@ class ResNet(nn.Module):
 
 def train(model, device, train_loader, optimizer, epoch):
 	print("Training epoch" + str(epoch))
-	model.to(device)
+	print(next(model.parameters()).is_cuda)
 	model.train()
 	sum_num_correct = 0
 	sum_loss = 0
@@ -129,6 +129,7 @@ def train(model, device, train_loader, optimizer, epoch):
 		print("Batch index " + str(batch_idx) + "/" + str(len(train_loader)))
 		optimizer.zero_grad()
 		#print(data[0])
+		print(next(model.parameters()).is_cuda)
 		output = model(data)
 #		print(list(output))
 #		print(target)
