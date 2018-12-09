@@ -173,12 +173,12 @@ for epoch in range(1, 75):
     print(lTestAcc)
     print(lF1)
 
-fig, ax = plt.subplots(nrows = 1, ncols = 2)
-ax[0].plot(lTrainAcc, linestyle='-', color='red', label='train')
-ax[0].plot(lTestAcc, linestyle='-', color='blue', label='test')
-ax[1].plot(lF1, marker='o', linestyle='-', color='green', label='F1')
-ax[0].legend()
-ax[1].legend()
+plt.plot(lTrainAcc, linestyle='-', color='red', label='train')
+plt.plot(lTestAcc, linestyle='-', color='blue', label='test')
+plt.legend()
+plt.show()
+plt.plot(lF1, marker='o', linestyle='-', color='green', label='F1')
+plt.legend()
 plt.show()
 #    woah = input("Enter  to continue...")
 
