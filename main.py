@@ -148,7 +148,7 @@ lTestAcc = []
 lF1 = []
 
 for epoch in range(1, 75):
-    trainAcc = net.train(model, device, batchTrainingData, optimizer, epoch)
+    trainAcc = net.train(model, device, batchTrainingData[:3], optimizer, epoch)
     lTrainAcc.append(trainAcc)
     totalCorrect = 0
     total = 0
@@ -173,13 +173,13 @@ for epoch in range(1, 75):
     print(lTestAcc)
     print(lF1)
 
-plt.plot(lTrainAcc, linestyle='-', color='red', label='train')
-plt.plot(lTestAcc, linestyle='-', color='blue', label='test')
-plt.legend()
-plt.show()
-plt.plot(lF1, marker='o', linestyle='-', color='green', label='F1')
-plt.legend()
-plt.show()
+#plt.plot(lTrainAcc, linestyle='-', color='red', label='train')
+#plt.plot(lTestAcc, linestyle='-', color='blue', label='test')
+#plt.legend()
+#plt.show()
+#plt.plot(lF1, marker='o', linestyle='-', color='green', label='F1')
+#plt.legend()
+#plt.show()
 #    woah = input("Enter  to continue...")
 
 
