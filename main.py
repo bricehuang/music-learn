@@ -137,7 +137,7 @@ print("Batchified training data")
 
 torch.manual_seed(1)
 
-model = net.Net(len(CLASSES), include_dropout = False).to(device)
+model = net.ResNet(len(CLASSES), include_dropout = False).to(device)
 print(next(model.parameters()).is_cuda)
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)

@@ -99,6 +99,7 @@ class ResNet(nn.Module):
 		self.finalfc1 = nn.Linear(128, 1024)
 		self.finalfc2 = nn.Linear(1024, numClasses)
 		self.finalsig = nn.Sigmoid()
+		self.finaldrop = nn.Dropout(0.50)
 
 		self.conv1 = nn.ModuleList()
 		self.conv2 = nn.ModuleList()
@@ -107,6 +108,7 @@ class ResNet(nn.Module):
 		self.conv5 = nn.ModuleList()
 		self.conv6 = nn.ModuleList()
 		self.pool = nn.ModuleList()
+		self.drop = nn.ModuleList()
 		for i in range(len(self.channels) - 1):
 			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=1))
 			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
@@ -116,6 +118,7 @@ class ResNet(nn.Module):
 			self.conv6.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
 
 			self.pool.append(nn.MaxPool2d(kernel_size=3))
+			self.drop.append(nn.Dropout(0.25))
 
 
 	def forward_block(self, x, ind):
@@ -126,6 +129,7 @@ class ResNet(nn.Module):
 		w = F.relu(self.conv5[ind](z))
 		w = F.relu(self.conv6[ind](w) + z)
 		w = self.pool[ind](w)
+		w = self.drop[ind](w)
 		return w
 
 
@@ -137,6 +141,7 @@ class ResNet(nn.Module):
 		x = self.finalPool(x)
 		x = x.view(-1, 128)
 		x = F.relu(self.finalfc1(x))
+		x = self.finaldrop(x)
 		x = self.finalfc2(x)
 		x = self.finalsig(x)
 		return x
