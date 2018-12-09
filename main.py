@@ -33,7 +33,7 @@ instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "v
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-CLASSES = range(11)
+CLASSES = [6,10]
 VALIDATION_FRAC = 0.15
 
 def encodeLabels(labels):
@@ -137,7 +137,7 @@ print("Batchified training data")
 
 torch.manual_seed(1)
 
-model = net.ResNet(len(CLASSES)).to(device)
+model = net.Net(len(CLASSES)).to(device)
 print(next(model.parameters()).is_cuda)
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
