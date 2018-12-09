@@ -139,7 +139,7 @@ model = net.Net(len(CLASSES)).to(device)
 print(next(model.parameters()).is_cuda)
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
-optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
 lTrainAcc = []
 lTestAcc = []
