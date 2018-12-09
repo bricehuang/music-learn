@@ -64,20 +64,24 @@ class Net(nn.Module):
 #			x = self.forward_block(x, i)
 		x = F.relu(self.conv1(x))
 		x = self.conv2(x)
+		print(x.shape)
 		x = self.pool3(x)
 		x = self.drop4(x)
 		x = F.relu(self.conv5(x))
 		x = self.conv6(x)
+		print(x.shape)
 		x = self.pool7(x)
 		x = self.drop8(x)
 		x = F.relu(self.conv9(x))
 		x = self.conv10(x)
+		print(x.shape)
 		x = self.pool11(x)
 		x = self.drop12(x)
 
 
 		x = F.relu(self.finalConv1(x))
 		x = self.finalConv2(x)
+		print(x.shape)
 		x = self.finalPool1(x)
 		#print(x.shape)
 		x = x.view(-1, 256)
@@ -98,13 +102,13 @@ class ResNet(nn.Module):
 		self.finalfc2 = nn.Linear(1024, numClasses)
 		self.finalsig = nn.Sigmoid()
 
-		self.conv1 = []
-		self.conv2 = []
-		self.conv3 = []
-		self.conv4 = []
-		self.conv5 = []
-		self.conv6 = []
-		self.pool = []
+		self.conv1 = nn.ModuleList()
+		self.conv2 = nn.ModuleList()
+		self.conv3 = nn.ModuleList()
+		self.conv4 = nn.ModuleList()
+		self.conv5 = nn.ModuleList()
+		self.conv6 = nn.ModuleList()
+		self.pool = nn.ModuleList()
 		for i in range(len(self.channels) - 1):
 			self.conv1.append(nn.Conv2d(self.channels[i], self.channels[i+1], kernel_size=3, padding=1))
 			self.conv2.append(nn.Conv2d(self.channels[i+1], self.channels[i+1], kernel_size=3, padding=1))
