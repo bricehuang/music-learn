@@ -33,7 +33,7 @@ instruments = ["cel", "cla", "flu", "gac", "gel", "org", "pia", "sax", "tru", "v
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-CLASSES = [6,10]
+CLASSES = range(11)
 VALIDATION_FRAC = 0.15
 
 def encodeLabels(labels):
@@ -113,8 +113,6 @@ for data in procTrainingData:
         data = (data[0], CLASSES.index(data[1]))
         filteredTrainingData.append(data)
         count[data[1]] += 1
-#        plt.imshow(data[0], cmap='hot', interpolation='nearest')
-#        plt.show()
 
 #classSize = min(count)
 #cutFilteredTrainingData = []
@@ -141,7 +139,7 @@ model = net.Net(len(CLASSES)).to(device)
 print(next(model.parameters()).is_cuda)
 #model = resnet.ResNet(resnet.BasicBlock,[2,2,2,2],num_classes=11)
 #model.conv1 = torch.nn.Conv2d(1,64,kernel_size=7,stride=2,padding=3,bias=False)
-optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
 
 lTrainAcc = []
 lTestAcc = []
