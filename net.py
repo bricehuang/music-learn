@@ -66,15 +66,18 @@ class Net(nn.Module):
 		x = F.relu(self.conv1(x))
 		x = self.conv2(x)
 		x = self.pool3(x)
-		x = self.drop4(x)
+		if self.include_dropout:
+			x = self.drop4(x)
 		x = F.relu(self.conv5(x))
 		x = self.conv6(x)
 		x = self.pool7(x)
-		x = self.drop8(x)
+		if self.include_dropout:
+			x = self.drop8(x)
 		x = F.relu(self.conv9(x))
 		x = self.conv10(x)
 		x = self.pool11(x)
-		x = self.drop12(x)
+		if self.include_dropout:
+			x = self.drop12(x)
 
 		x = F.relu(self.finalConv1(x))
 		x = self.finalConv2(x)
@@ -130,7 +133,7 @@ class ResNet(nn.Module):
 		#print(x.shape)
 		for i in range(len(self.channels) - 1):
 			x = self.forward_block(x, i)
-			print(x.shape)
+#			print(x.shape)
 		x = self.finalPool(x)
 		x = x.view(-1, 128)
 		x = F.relu(self.finalfc1(x))
